@@ -49,18 +49,21 @@
           document.head.appendChild(link);
           link.onload = function(e) {
             loadCache( url , true );
-            callback( loadCache( url ) );
+            callback( undefined );
           }
         }
       }
-    deps = deps.map( function( dep ){
-      var match = makeMatch(keys(loaders))( dep ),
-        type = match ? match[1] : null;
-      return {
-        url : type ? dep : dep + ".js",
-        loader : loaders[type || "js"]
-      };
-    });
+    deps = deps.reduce(function(a, b){
+      var match = makeMatch(keys(loaders))( b ),
+        basename = match ? match[1] : b,
+        types = match ? match[2].split("|") : ["js"];
+      return a.concat(types.map(function( type ){
+        return {
+          url : basename + "." + type,
+          loader : loaders[ type ]
+        };
+      }));
+    },[]);
     function keys(obj){
       var rs = [];
       for(var i in obj){
@@ -70,14 +73,14 @@
     }
     function makeMatch ( arr ){
       return function( str ){
-        return new RegExp( "\\.((" + arr.join(")|(?:") + "))$" ).exec( str );
+        return new RegExp( "(.*)\\.((?:(?:(?:" + arr.join(")|(?:") + "))\\|)*(?:(?:" + arr.join(")|(?:") + ")))$" ).exec( str );
       }
     }
     function load( deps ){
       var dep = deps.shift();
       if( dep ){
         dep.loader( dep.url, function( d ) {
-          rs.push( d );
+          typeof d !== "undefined" ? rs.push( d ) : null;
           load( deps );
         })
       } else {
