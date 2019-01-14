@@ -21,7 +21,7 @@
       loaders = {
         js : function(url, callback){
           if( loadCache(url) ){
-            callback( loadCache(url) );
+            callback( undefined );
             return;
           }
           var module = {
