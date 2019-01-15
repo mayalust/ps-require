@@ -21,8 +21,8 @@
       loaders = {
         js : function(url, callback){
           if( loadCache(url) ){
-            callback( undefined );
-            return;
+            loadCache(url).remove();
+            delete loadCache[ url ];
           }
           var module = {
               url : url
@@ -33,14 +33,14 @@
           document.head.appendChild(script);
           script.onload = function(e) {
             var execCb = globalQueue.shift();
-            loadCache( url, execCb.call(module) );
-            callback( loadCache( url ) );
+            loadCache( url, script );
+            callback( execCb.call(module) );
           }
         },
         css : function( url, callback ){
           if( loadCache(url) ){
-            callback( loadCache(url) );
-            return;
+            loadCache(url).remove();
+            delete loadCache[ url ];
           }
           var link = document.createElement("link");
           link.setAttribute("rel" , "stylesheet");
@@ -48,7 +48,7 @@
           link.setAttribute("href" , url);
           document.head.appendChild(link);
           link.onload = function(e) {
-            loadCache( url , true );
+            loadCache( url, link );
             callback( undefined );
           }
         }
