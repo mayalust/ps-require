@@ -34,7 +34,7 @@
           script.onload = function(e) {
             var execCb = globalQueue.shift();
             loadCache( url, script );
-            callback( execCb.call(module) );
+            callback( execCb ? execCb.call(module) : null );
           }
         },
         css : function( url, callback ){
