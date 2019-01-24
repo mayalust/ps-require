@@ -40,10 +40,11 @@
               error && error( e );
             }
             loadCache( url, script );
-            typeof rs !== "undefined" ? callback( rs ) : null;
+            callback( rs );
           }
           script.error = function(e) {
             error && error( e );
+            //callback( undefined );
           }
         },
         css : function( url, callback ){
