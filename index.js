@@ -16,7 +16,7 @@
     }
     return cached;
   }
-  window.psrequire = function(deps, callback){
+  window.psrequire = function(deps, callback, error){
     var rs = [],
       loaders = {
         js : function(url, callback){
@@ -32,9 +32,18 @@
           script.setAttribute("type" , "text/javascript");
           document.head.appendChild(script);
           script.onload = function(e) {
-            var execCb = globalQueue.shift();
+            var execCb, rs;
+            try {
+              execCb = globalQueue.shift();
+              rs = execCb ? execCb.call(module) : undefined;
+            } catch( e ){
+              error && error( e );
+            }
             loadCache( url, script );
-            callback( execCb ? execCb.call(module) : undefined );
+            typeof rs !== "undefined" ? callback( rs ) : null;
+          }
+          script.error = function(e) {
+            error && error( e );
           }
         },
         css : function( url, callback ){
