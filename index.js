@@ -36,9 +36,9 @@
             try {
               execCb = globalQueue.shift();
               rs = execCb ? execCb.call(module) : undefined;
-              return;
             } catch( e ){
               error && error( e );
+              return;
             }
             loadCache( url, script );
             callback( rs );
