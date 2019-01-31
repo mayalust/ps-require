@@ -49,16 +49,16 @@
           }
         },
         css : function( url, callback ){
-          if( loadCache(url) ){
-            loadCache(url).remove();
-            delete loadCache[ url ];
-          }
           var link = document.createElement("link");
           link.setAttribute("rel" , "stylesheet");
           link.setAttribute("type" , "text/css");
           link.setAttribute("href" , url);
           document.head.appendChild(link);
           link.onload = function(e) {
+            if( loadCache(url) ){
+              loadCache(url).remove();
+              delete loadCache[ url ];
+            }
             loadCache( url, link );
             callback( undefined );
           }
