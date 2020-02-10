@@ -16,6 +16,18 @@
     }
     return cached;
   }
+  function generateRandomVersion (length) {
+    length = length || 4;
+    var chars = 'abcdedfghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890',
+      rs = '',
+      rnd,
+      len = chars.length;
+    for (var i = 0; i < length; i++) {
+      rnd = parseInt(Math.random() * len);
+      rs += chars[rnd];
+    }
+    return rs;
+  }
   window.psrequire = function(deps, callback, error){
     var rs = [],
       loaders = {
@@ -28,7 +40,7 @@
               url : url
             },
             script = document.createElement("script");
-          script.setAttribute("src" , url);
+          script.setAttribute("src" , url + '?version=' + generateRandomVersion());
           script.setAttribute("type" , "text/javascript");
           document.head.appendChild(script);
           script.onload = function(e) {
@@ -52,7 +64,7 @@
           var link = document.createElement("link");
           link.setAttribute("rel" , "stylesheet");
           link.setAttribute("type" , "text/css");
-          link.setAttribute("href" , url);
+          link.setAttribute("href" , url + '?version=' + generateRandomVersion());
           document.head.appendChild(link);
           link.onload = function(e) {
             if( loadCache(url) ){
